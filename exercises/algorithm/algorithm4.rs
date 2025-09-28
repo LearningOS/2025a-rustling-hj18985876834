@@ -3,7 +3,7 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -50,13 +50,20 @@ where
 
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
-        //TODO
+        if let Some(ref mut root) = self.root {
+            root.insert(value);
+        } else {
+            self.root = Some(Box::new(TreeNode::new(value)));
+        }
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
-        //TODO
-        true
+        if let Some(ref root) = self.root {
+            root.search(value)
+        } else {
+            false
+        }
     }
 }
 
@@ -66,7 +73,34 @@ where
 {
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
-        //TODO
+        use std::cmp::Ordering::*;
+        match value.cmp(&self.value) {
+            Less => {
+                if let Some(ref mut l) = self.left {
+                    l.insert(value);
+                } else {
+                    self.left = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Greater => {
+                if let Some(ref mut r) = self.right {
+                    r.insert(value);
+                } else {
+                    self.right = Some(Box::new(TreeNode::new(value)));
+                }
+            }
+            Equal => { /* 去重：直接丢弃 */ }
+        }
+    }
+
+    // 递归搜索子树
+    fn search(&self, value: T) -> bool {
+        use std::cmp::Ordering::*;
+        match value.cmp(&self.value) {
+            Equal => true,
+            Less => self.left.as_ref().map_or(false, |l| l.search(value)),
+            Greater => self.right.as_ref().map_or(false, |r| r.search(value)),
+        }
     }
 }
 
